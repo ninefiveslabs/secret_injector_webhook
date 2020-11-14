@@ -1,0 +1,20 @@
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: box
+  labels:
+    app: box
+spec:
+  containers:
+  - image: bash
+    imagePullPolicy: IfNotPresent
+    command: [ "echo" ]
+    args: [ "Vault: $(VAULT_PASSWORD) AWS_SSM: $(SSM_PASSWORD)"]
+    name: box
+    env:
+    - name: VAULT_PASSWORD
+      value: "secret:vault:test/pass:password"
+    - name: SSM_PASSWORD
+      value: "secret:ssm:password"
+  restartPolicy: Always

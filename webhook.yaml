@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mutate-webhook
+spec:
+  selector:
+    matchLabels:
+      run: mutate-webhook
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: mutate-webhook
+    spec:
+      containers:
+      - name: mutate-webhook
+        image: mutate
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 443
+        volumeMounts:
+        - name: webhook-certs
+          mountPath: /certs
+          readOnly: true
+      volumes:
+      - name: webhook-certs
+        secret:
+          secretName: mutate-webhook-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mutate-webhook-svc
+  labels:
+    run: mutate-webhook
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+  selector:
+    run: mutate-webhook
